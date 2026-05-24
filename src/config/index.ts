@@ -7,3 +7,4 @@ export const MONGODB_URI: string =
     process.env.MONGODB_URI || 'mongodb://localhost:27017/kajani_backend';
 export const JWT_SECRET: string = 
     process.env.JWT_SECRET || 'default_secret';
+export const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "30d";

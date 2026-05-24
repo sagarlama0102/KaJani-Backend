@@ -4,11 +4,18 @@ import dotenv from 'dotenv';
 import { connectDatabase } from './database/mongodb';
 import { PORT } from './config';
 import cors from "cors";
+import admin from "firebase-admin";
+import * as serviceAccount from "../firebase-service-account.json";
 import path from 'path';
 import { HttpError } from './errors/http-error';
 
+
 dotenv.config();
 console.log(process.env.PORT);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
 
 const app: Application = express();
 
@@ -36,6 +43,4 @@ app.use((err: Error, req: Request, res: Response, next: Function) => {
 
 export default app;
 
-export function listen(PORT: number, arg1: () => void) {
-    throw new Error('Function not implemented.');
-}
+
