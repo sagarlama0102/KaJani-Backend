@@ -1,46 +1,38 @@
-import express, { Application, Request, Response } from 'express';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import { connectDatabase } from './database/mongodb';
-import { PORT } from './config';
+import express, { Application, Request, Response } from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import admin from "firebase-admin";
 import * as serviceAccount from "../firebase-service-account.json";
-import path from 'path';
-import { HttpError } from './errors/http-error';
-
+import { HttpError } from "./errors/http-error";
+import authRoutes from "./routes/auth.route";
 
 dotenv.config();
-console.log(process.env.PORT);
 
+// ─── Firebase Admin Init ──────────────────────────────────────────
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
 
 const app: Application = express();
 
-let corsOptions = {
-    origin: ["http://localhost:3000","http://localhost:3003"],
-    optionsSuccessStatus: 200,
-    credentials: true,
-}
+// ─── Middleware ───────────────────────────────────────────────────
+app.use(cors()); // open for Flutter mobile
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
+// ─── Routes ───────────────────────────────────────────────────────
+app.use("/api/auth", authRoutes);
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get('/', (req: Request, res: Response) => {
-    return res.status(200).json({ success: "true", message: "Welcome to the API" });
+app.get("/", (req: Request, res: Response) => {
+  return res.status(200).json({ success: true, message: "Kajani API is running" });
 });
 
+// ─── Global Error Handler ─────────────────────────────────────────
 app.use((err: Error, req: Request, res: Response, next: Function) => {
-    if (err instanceof HttpError) {
-        return res.status(err.statusCode).json({ success: false, message: err.message });
-    }
-    return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
+  if (err instanceof HttpError) {
+    return res.status(err.statusCode).json({ success: false, message: err.message });
+  }
+  return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
 });
 
 export default app;
-
-

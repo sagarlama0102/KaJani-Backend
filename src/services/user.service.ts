@@ -7,7 +7,7 @@ import { HttpError } from "../errors/http-error";
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config";
 import { IUser } from "../models/user.model";
 
-const userRepository = new UserRepository();
+let userRepository = new UserRepository();
 
 export class UserService {
 
@@ -107,6 +107,7 @@ export class UserService {
     try {
       decodedToken = await admin.auth().verifyIdToken(data.idToken);
     } catch (error) {
+      console.log('Firebase token error:', error);
       throw new HttpError(401, "Invalid or expired Google token");
     }
 
@@ -158,8 +159,8 @@ export class UserService {
   }
 
   // ─── Get Current User ───────────────────────────────────────────
-  async getCurrentUser(id: string) {
-    const user = await userRepository.getUserById(id);
+  async getCurrentUser(userId: string) {
+    const user = await userRepository.getUserById(userId);
     if (!user) {
       throw new HttpError(404, "User not found");
     }
@@ -167,13 +168,13 @@ export class UserService {
   }
 
   // ─── Update User ────────────────────────────────────────────────
-  async updateUser(id: string, data: UpdateUserDTO) {
-    const user = await userRepository.getUserById(id);
+  async updateUser(userId: string, data: UpdateUserDTO) {
+    const user = await userRepository.getUserById(userId);
     if (!user) {
       throw new HttpError(404, "User not found");
     }
 
-    const updatedUser = await userRepository.updateUser(id, data);
+    const updatedUser = await userRepository.updateUser(userId, data);
     if (!updatedUser) {
       throw new HttpError(500, "Failed to update user");
     }
