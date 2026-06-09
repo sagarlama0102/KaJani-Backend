@@ -66,6 +66,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
+firebase-service-account.json
 .env
 .env.*
 !.env.example
@@ -78,6 +79,6 @@ dist
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
-!.yarn/releases
+!.yarn/releases 
 !.yarn/sdks
 !.yarn/versions
