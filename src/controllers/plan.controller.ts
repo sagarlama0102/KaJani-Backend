@@ -17,7 +17,7 @@ export class PlanController {
           message: z.prettifyError(parsed.error),
         });
       }
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plan = await planService.createPlan(parsed.data, userId);
       return res.status(201).json({
         success: true,
@@ -87,7 +87,7 @@ export class PlanController {
           message: z.prettifyError(parsed.error),
         });
       }
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const updated = await planService.updatePlan(req.params.id as string, parsed.data, userId);
       return res.status(200).json({
         success: true,
@@ -105,7 +105,7 @@ export class PlanController {
   // ─── Delete Plan ─────────────────────────────────────────────────
   async deletePlan(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+     const userId = (req as any).user._id.toString();
       const result = await planService.deletePlan(req.params.id as string, userId);
       return res.status(200).json({
         success: true,
@@ -122,7 +122,7 @@ export class PlanController {
   // ─── Get My Plans ────────────────────────────────────────────────
   async getMyPlans(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plans = await planService.getMyPlans(userId);
       return res.status(200).json({
         success: true,
@@ -140,7 +140,7 @@ export class PlanController {
   // ─── Get Joined Plans ────────────────────────────────────────────
   async getJoinedPlans(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plans = await planService.getJoinedPlans(userId);
       return res.status(200).json({
         success: true,
@@ -158,7 +158,7 @@ export class PlanController {
   // ─── Get Saved Plans ─────────────────────────────────────────────
   async getSavedPlans(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plans = await planService.getSavedPlans(userId);
       return res.status(200).json({
         success: true,
@@ -176,7 +176,7 @@ export class PlanController {
   // ─── Join Plan ───────────────────────────────────────────────────
   async joinPlan(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plan = await planService.joinPlan(req.params.id as string, userId);
       return res.status(200).json({
         success: true,
@@ -194,7 +194,7 @@ export class PlanController {
   // ─── Leave Plan ──────────────────────────────────────────────────
   async leavePlan(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const plan = await planService.leavePlan(req.params.id as string, userId);
       return res.status(200).json({
         success: true,
@@ -212,7 +212,7 @@ export class PlanController {
   // ─── Toggle Save Plan ────────────────────────────────────────────
   async toggleSavePlan(req: Request, res: Response) {
     try {
-      const userId = (req as any).userId;
+      const userId = (req as any).user._id.toString();
       const result = await planService.toggleSavePlan(req.params.id as string, userId);
       return res.status(200).json({
         success: true,

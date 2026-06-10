@@ -2,7 +2,7 @@ import { Router } from "express";
 import { PlanController } from "../controllers/plan.controller";
 import { authorizationMiddleware } from "../middlewares/authorization.middleware";
 
-let planController = new PlanController();
+const planController = new PlanController();
 const router = Router();
 
 router.get("/", planController.getAllPlans);
