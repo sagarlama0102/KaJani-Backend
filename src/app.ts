@@ -6,6 +6,7 @@ import * as serviceAccount from "../firebase-service-account.json";
 import { HttpError } from "./errors/http-error";
 import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
+import path from 'path';
 
 dotenv.config();
 
@@ -35,5 +36,7 @@ app.use((err: Error, req: Request, res: Response, next: Function) => {
   }
   return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
 });
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 export default app;
