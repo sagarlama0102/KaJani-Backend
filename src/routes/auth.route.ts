@@ -13,7 +13,7 @@ router.post("/google", authController.googleSignIn); // 👈 Google OAuth
 
 // ─── Protected Routes ─────────────────────────────────────────────
 router.get("/whoami", authorizationMiddleware, authController.getProfile);
-router.put(
+router.post(
   "/update-profile",
   authorizationMiddleware,
   uploads.single("profilePicture"),
