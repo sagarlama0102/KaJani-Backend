@@ -11,6 +11,7 @@ export const CreatePlanDTO = PlanSchema.pick(
         time: true,
         endTime: true,
         date: true,
+        endDate: true,
         isPublic: true,
         maxMembers: true
     }

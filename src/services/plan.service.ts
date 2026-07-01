@@ -14,7 +14,7 @@ export class PlanService {
 
     const now = new Date();
     const planStart = new Date(`${plan.date}T${plan.time}`);
-    const planEnd = new Date(`${plan.date}T${plan.endTime}`);
+    const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
 
     if (now < planStart) return "upcoming";
     if (now >= planStart && now < planEnd) return "ongoing";
@@ -32,7 +32,6 @@ export class PlanService {
   }
 
 
-
   async getAllPlans(
     page?: string,
     size?: string,
@@ -48,7 +47,7 @@ export class PlanService {
       pageSize,
       search,
       category,
-      status,
+      // status,
     );
       plans.forEach(plan => { plan.status = this.computeStatus(plan); });
   

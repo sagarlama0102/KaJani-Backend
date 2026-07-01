@@ -17,6 +17,7 @@ export const PlanSchema = z.object({
     date: z.string().min(1, "Date is required"),
     time: z.string().min(1, "Time is required"),
     endTime: z.string().min(1, "End time is required"),
+    endDate: z.string().min(1, "End date is required"),
     isPublic: z.boolean().default(true),
     maxMembers: z.number().min(2).optional(),
     status: z.enum(["upcoming", "ongoing", "completed", "cancelled"]).default("upcoming"),
