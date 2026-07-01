@@ -11,14 +11,27 @@ export class PlanService {
     // ─── Helper: compute current status ─────────────────────────────
   private computeStatus(plan: IPlan): "upcoming" | "ongoing" | "completed" | "cancelled" {
     if (plan.status === "cancelled") return "cancelled";
+    if (!plan.endDate || !plan.endTime) return "upcoming";
 
     const now = new Date();
     const planStart = new Date(`${plan.date}T${plan.time}`);
     const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
 
-    if (now < planStart) return "upcoming";
-    if (now >= planStart && now < planEnd) return "ongoing";
-    return "completed";
+    console.log(`
+    Plan: ${plan.title}
+    Now: ${now.toISOString()}
+    Start: ${planStart.toISOString()}
+    End: ${planEnd.toISOString()}
+    isNaN start: ${isNaN(planStart.getTime())}
+    isNaN end: ${isNaN(planEnd.getTime())}
+    now < start: ${now < planStart}
+    now >= start AND now < end: ${now >= planStart && now < planEnd}
+  `);
+
+if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
+  if (now < planStart) return "upcoming";
+  if (now >= planStart && now < planEnd) return "ongoing";
+  return "completed";
   }
   
   async createPlan(data: CreatePlanDTO, creatorId: string) {
@@ -50,14 +63,17 @@ export class PlanService {
       // status,
     );
       plans.forEach(plan => { plan.status = this.computeStatus(plan); });
+      const filteredPlans = status
+  ? plans.filter(plan => plan.status === status)
+  : plans.filter(plan => plan.status !== 'completed' && plan.status !== 'cancelled');
   
     return {
-      plans,
+      plans: filteredPlans,
       pagination: {
         page: pageNumber,
         size: pageSize,
-        totalItems: total,
-        totalPages: Math.ceil(total / pageSize),
+        totalItems: filteredPlans.length,
+        totalPages: Math.ceil(filteredPlans.length / pageSize),
       },
     };
   }
