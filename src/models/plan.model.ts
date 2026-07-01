@@ -10,6 +10,7 @@ export interface IPlan extends Document {
   location: string;
   date: string;
   time: string;
+  endTime: string;
   isPublic: boolean;
   maxMembers?: number;
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
@@ -20,7 +21,6 @@ export interface IPlan extends Document {
   updatedAt: Date;
 }
 
-// ✅ use IPlan not PlanType
 const PlanSchema = new Schema<IPlan>(
   {
     title: { type: String, required: true, trim: true },
@@ -34,6 +34,7 @@ const PlanSchema = new Schema<IPlan>(
     location: { type: String, required: true },
     date: { type: String, required: true },
     time: { type: String, required: true },
+    endTime: { type: String, required: true },
     isPublic: { type: Boolean, default: true },
     maxMembers: { type: Number },
     status: {
