@@ -6,6 +6,7 @@ import * as serviceAccount from "../firebase-service-account.json";
 import { HttpError } from "./errors/http-error";
 import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
+import notificationRoutes from "./routes/notification.route";
 import path from 'path';
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   return res.status(200).json({ success: true, message: "Kajani API is running" });
