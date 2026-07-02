@@ -1,11 +1,39 @@
 import { CreatePlanDTO, UpdatePlanDTO } from "../dtos/plan.dto";
 import { PlanRepository } from "../repositories/plan.repository";
 import { HttpError } from "../errors/http-error";
+import { IPlan } from "../models/plan.model";
 
 const planRepository = new PlanRepository();
 
+
 export class PlanService {
 
+    // ─── Helper: compute current status ─────────────────────────────
+  private computeStatus(plan: IPlan): "upcoming" | "ongoing" | "completed" | "cancelled" {
+    if (plan.status === "cancelled") return "cancelled";
+    if (!plan.endDate || !plan.endTime) return "upcoming";
+
+    const now = new Date();
+    const planStart = new Date(`${plan.date}T${plan.time}`);
+    const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
+
+    console.log(`
+    Plan: ${plan.title}
+    Now: ${now.toISOString()}
+    Start: ${planStart.toISOString()}
+    End: ${planEnd.toISOString()}
+    isNaN start: ${isNaN(planStart.getTime())}
+    isNaN end: ${isNaN(planEnd.getTime())}
+    now < start: ${now < planStart}
+    now >= start AND now < end: ${now >= planStart && now < planEnd}
+  `);
+
+if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
+  if (now < planStart) return "upcoming";
+  if (now >= planStart && now < planEnd) return "ongoing";
+  return "completed";
+  }
+  
   async createPlan(data: CreatePlanDTO, creatorId: string) {
     const plan = await planRepository.createPlan({
       ...data,
@@ -15,6 +43,7 @@ export class PlanService {
     });
     return plan;
   }
+
 
   async getAllPlans(
     page?: string,
@@ -31,16 +60,20 @@ export class PlanService {
       pageSize,
       search,
       category,
-      status,
+      // status,
     );
-
+      plans.forEach(plan => { plan.status = this.computeStatus(plan); });
+      const filteredPlans = status
+  ? plans.filter(plan => plan.status === status)
+  : plans.filter(plan => plan.status !== 'completed' && plan.status !== 'cancelled');
+  
     return {
-      plans,
+      plans: filteredPlans,
       pagination: {
         page: pageNumber,
         size: pageSize,
-        totalItems: total,
-        totalPages: Math.ceil(total / pageSize),
+        totalItems: filteredPlans.length,
+        totalPages: Math.ceil(filteredPlans.length / pageSize),
       },
     };
   }
@@ -49,6 +82,7 @@ export class PlanService {
   async getPlanById(planId: string) {
     const plan = await planRepository.getPlanById(planId);
     if (!plan) throw new HttpError(404, "Plan not found");
+    plan.status = this.computeStatus(plan);
     return plan;
   }
 
@@ -72,17 +106,23 @@ export class PlanService {
 
 
   async getMyPlans(userId: string) {
-    return planRepository.getMyPlans(userId);
+    const plans = await planRepository.getMyPlans(userId);
+  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); 
+  return plans;
   }
 
 
   async getJoinedPlans(userId: string) {
-    return planRepository.getJoinedPlans(userId);
+    const plans = await planRepository.getJoinedPlans(userId);
+  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); // 👈 add this
+  return plans;
   }
 
 
   async getSavedPlans(userId: string) {
-    return planRepository.getSavedPlans(userId);
+    const plans = await planRepository.getSavedPlans(userId);
+  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); // 👈 add this
+  return plans;
   }
 
 
@@ -100,9 +140,10 @@ export class PlanService {
     }
 
     // Check if plan is still upcoming
-    if (plan.status === "completed" || plan.status === "cancelled") {
-      throw new HttpError(400, "You cannot join a completed or cancelled plan");
-    }
+    const currentStatus = this.computeStatus(plan); // 👈 use computed status
+  if (currentStatus === "completed" || currentStatus === "cancelled") {
+    throw new HttpError(400, "You cannot join a completed or cancelled plan");
+  }
 
     return planRepository.joinPlan(planId, userId);
   }
