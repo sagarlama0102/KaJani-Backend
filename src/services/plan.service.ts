@@ -2,8 +2,13 @@ import { CreatePlanDTO, UpdatePlanDTO } from "../dtos/plan.dto";
 import { PlanRepository } from "../repositories/plan.repository";
 import { HttpError } from "../errors/http-error";
 import { IPlan } from "../models/plan.model";
+import { NotificationService } from "./notification.service";
+
+
 
 const planRepository = new PlanRepository();
+
+const notificationService = new NotificationService();
 
 
 export class PlanService {
@@ -17,16 +22,16 @@ export class PlanService {
     const planStart = new Date(`${plan.date}T${plan.time}`);
     const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
 
-    console.log(`
-    Plan: ${plan.title}
-    Now: ${now.toISOString()}
-    Start: ${planStart.toISOString()}
-    End: ${planEnd.toISOString()}
-    isNaN start: ${isNaN(planStart.getTime())}
-    isNaN end: ${isNaN(planEnd.getTime())}
-    now < start: ${now < planStart}
-    now >= start AND now < end: ${now >= planStart && now < planEnd}
-  `);
+  //   console.log(`
+  //   Plan: ${plan.title}
+  //   Now: ${now.toISOString()}
+  //   Start: ${planStart.toISOString()}
+  //   End: ${planEnd.toISOString()}
+  //   isNaN start: ${isNaN(planStart.getTime())}
+  //   isNaN end: ${isNaN(planEnd.getTime())}
+  //   now < start: ${now < planStart}
+  //   now >= start AND now < end: ${now >= planStart && now < planEnd}
+  // `);
 
 if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
   if (now < planStart) return "upcoming";
@@ -140,12 +145,23 @@ if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
     }
 
     // Check if plan is still upcoming
-    const currentStatus = this.computeStatus(plan); // 👈 use computed status
+    const currentStatus = this.computeStatus(plan); // use computed status
   if (currentStatus === "completed" || currentStatus === "cancelled") {
     throw new HttpError(400, "You cannot join a completed or cancelled plan");
   }
 
-    return planRepository.joinPlan(planId, userId);
+    const result = await planRepository.joinPlan(planId, userId);
+
+  await notificationService.createJoinNotification(
+    userId,
+    (plan.creator as any)._id
+  ? (plan.creator as any)._id.toString()
+  : plan.creator.toString(),
+    planId,
+    plan.title,
+  );
+
+  return result;
   }
 
 
@@ -160,7 +176,19 @@ if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
     const isMember = await planRepository.isMember(planId, userId);
     if (!isMember) throw new HttpError(400, "You are not a member of this plan");
 
-    return planRepository.leavePlan(planId, userId);
+    const result = await planRepository.leavePlan(planId, userId);
+
+  // trigger notification
+  await notificationService.createLeaveNotification(
+    userId,
+    (plan.creator as any)._id
+  ? (plan.creator as any)._id.toString()
+  : plan.creator.toString(),
+    planId,
+    plan.title,
+  );
+
+  return result;
   }
 
   async toggleSavePlan(planId: string, userId: string) {
