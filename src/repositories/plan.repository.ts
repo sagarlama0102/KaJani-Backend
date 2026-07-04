@@ -70,6 +70,7 @@ export class PlanRepository implements IPlanRepository {
     const [plans, total] = await Promise.all([
       PlanModel.find(filter)
         .populate("creator", "firstName lastName profilePicture username")
+        .populate("members", "firstName lastName profilePicture username")
         .sort({ createdAt: -1 })
         .skip((page - 1) * size)
         .limit(size),
@@ -97,12 +98,14 @@ export class PlanRepository implements IPlanRepository {
   async getJoinedPlans(userId: string): Promise<IPlan[]> {
     return PlanModel.find({ members: userId })
       .populate("creator", "firstName lastName profilePicture username")
+      .populate("members", "firstName lastName profilePicture username")
       .sort({ createdAt: -1 });
   }
 
   async getSavedPlans(userId: string): Promise<IPlan[]> {
     return PlanModel.find({ savedBy: userId })
       .populate("creator", "firstName lastName profilePicture username")
+      .populate("members", "firstName lastName profilePicture username")
       .sort({ createdAt: -1 });
   }
 
