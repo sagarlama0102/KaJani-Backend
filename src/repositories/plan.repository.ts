@@ -90,6 +90,7 @@ export class PlanRepository implements IPlanRepository {
 
   async getMyPlans(userId: string): Promise<IPlan[]> {
     return PlanModel.find({ creator: userId })
+    .populate("members", "firstName lastName profilePicture username")
       .sort({ createdAt: -1 });
   }
 

@@ -42,7 +42,7 @@ export class PlanController {
         category?: string;
         status?: string;
       };
-       console.log('📊 getAllPlans called with status:', status);
+      //  console.log('📊 getAllPlans called with status:', status);
       const { plans, pagination } = await planService.getAllPlans(
         page, size, search, category, status
       );
