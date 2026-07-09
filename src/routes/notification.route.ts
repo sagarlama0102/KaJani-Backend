@@ -9,5 +9,6 @@ router.get("/", authorizationMiddleware, notificationController.getNotifications
 router.get("/unread-count", authorizationMiddleware, notificationController.getUnreadCount);
 router.put("/:id/read", authorizationMiddleware, notificationController.markAsRead);
 router.put("/mark-all-read", authorizationMiddleware, notificationController.markAllAsRead);
+router.delete("/clear-all", authorizationMiddleware, notificationController.clearAll);
 
 export default router;
