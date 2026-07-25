@@ -76,4 +76,16 @@ export class NotificationController {
       });
     }
   }
+  async clearAll(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user._id.toString();
+    const result = await notificationService.clearAllNotifications(userId);
+    return res.status(200).json({ success: true, message: result.message });
+  } catch (error: any) {
+    return res.status(error.statusCode ?? 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+}
 }

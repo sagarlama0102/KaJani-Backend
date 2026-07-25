@@ -1,3 +1,4 @@
+import { NotificationModel } from "../models/notification.model";
 import { NotificationRepository } from "../repositories/notification.repository";
 import { UserRepository } from "../repositories/user.repository";
 
@@ -84,4 +85,8 @@ export class NotificationService {
     const count = await notificationRepository.getUnreadCount(userId);
     return { count };
   }
+  async clearAllNotifications(userId: string) {
+  await NotificationModel.deleteMany({ recipient: userId });
+  return { message: "All notifications cleared" };
+}
 }
