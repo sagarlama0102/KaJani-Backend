@@ -230,6 +230,8 @@ export class PlanController {
 
   async uploadCoverImage(req: Request, res: Response) {
   try {
+    const userId = (req as any).user._id.toString();
+    await planService.assertCanUpload(userId);
    
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });

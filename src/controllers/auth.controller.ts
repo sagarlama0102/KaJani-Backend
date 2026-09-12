@@ -1,5 +1,5 @@
 import { UserService } from "../services/user.service";
-import { CreateUserDTO, LoginUserDTO, GoogleAuthSchema, UpdateUserDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, GoogleAuthSchema, UpdateUserDTO, CompleteProfileDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
 
@@ -57,6 +57,38 @@ export class AuthController {
       });
     }
   }
+
+  // ─── Complete Profile (Name Capture step) ────────────────────────
+async completeProfile(req: Request, res: Response) {
+  try {
+    const userId = req.user?._id.toString();
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID not found",
+      });
+    }
+    const parsedData = CompleteProfileDTO.safeParse(req.body);
+    if (!parsedData.success) {
+      return res.status(400).json({
+        success: false,
+        message: z.prettifyError(parsedData.error),
+      });
+    }
+    const { token, user } = await userService.completeProfile(userId, parsedData.data);
+    return res.status(200).json({
+      success: true,
+      message: "Profile completed successfully",
+      data: user,
+      token,
+    });
+  } catch (error: Error | any) {
+    return res.status(error.statusCode ?? 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+}
 
   // ─── Google OAuth ───────────────────────────────────────────────
   async googleSignIn(req: Request, res: Response) {

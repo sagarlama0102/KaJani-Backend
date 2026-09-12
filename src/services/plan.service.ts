@@ -3,11 +3,12 @@ import { PlanRepository } from "../repositories/plan.repository";
 import { HttpError } from "../errors/http-error";
 import { IPlan } from "../models/plan.model";
 import { NotificationService } from "./notification.service";
+import { UserRepository } from "../repositories/user.repository";
 
 
 
 const planRepository = new PlanRepository();
-
+const userRepository = new UserRepository();
 const notificationService = new NotificationService();
 
 
@@ -38,8 +39,21 @@ if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
   if (now >= planStart && now < planEnd) return "ongoing";
   return "completed";
   }
+
+  // ─── Helper: ensure a user is an admin ──────────────────────────
+private async ensureCanCreatePlans(userId: string): Promise<void> {
+  const user = await userRepository.getUserById(userId);
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+  if (!user.isAdmin) {
+    throw new HttpError(403, "You don't have permission to create plans");
+  }
+}
   
   async createPlan(data: CreatePlanDTO, creatorId: string) {
+    await this.ensureCanCreatePlans(creatorId);
+   
     const plan = await planRepository.createPlan({
       ...data,
       creator: creatorId as any,
@@ -49,6 +63,9 @@ if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
     return plan;
   }
 
+  async assertCanUpload(userId: string): Promise<void> {
+  await this.ensureCanCreatePlans(userId);
+}
 
   async getAllPlans(
     page?: string,

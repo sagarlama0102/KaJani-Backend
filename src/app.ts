@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
 import notificationRoutes from "./routes/notification.route";
 import path from 'path';
+import { generalLimiter } from "./middlewares/rate-limit.middleware";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ const app: Application = express();
 app.use(cors()); // open for Flutter mobile
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(generalLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);

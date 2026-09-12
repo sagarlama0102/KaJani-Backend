@@ -1,4 +1,4 @@
-import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, GoogleAuthType } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, GoogleAuthType, CompleteProfileDTO } from "../dtos/user.dto";
 import { UserRepository } from "../repositories/user.repository";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -32,7 +32,6 @@ export class UserService {
       lastName: user.lastName,
       username: user.username,
       email: user.email,
-      phoneNumber: user.phoneNumber,
       profilePicture: user.profilePicture,
       interests: user.interests,
       provider: user.provider,
@@ -49,24 +48,15 @@ export class UserService {
       throw new HttpError(409, "Email already in use");
     }
 
-    // Check username
-    const usernameCheck = await userRepository.getUserByUsername(data.username);
-    if (usernameCheck) {
-      throw new HttpError(409, "Username already in use");
-    }
 
     // Hash password
     const hashedPassword = await bcryptjs.hash(data.password, 10);
 
     // Create user
     const newUser = await userRepository.createUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
+      
       email: data.email,
-      username: data.username,
       password: hashedPassword,
-      phoneNumber: data.phoneNumber,
-      profilePicture: data.profilePicture,
       provider: "traditional",
       isOnboarded: false,
       isActive: true,
@@ -141,7 +131,7 @@ export class UserService {
         profilePicture: picture,
         firebaseUid: uid,
         provider: "google",
-        isOnboarded: false,
+        isOnboarded: true,
         isActive: true,
       });
     } else if (!user.firebaseUid) {
@@ -157,6 +147,28 @@ export class UserService {
 
     return { token, user: this.formatUser(user) };
   }
+
+  // ─── Complete Profile (Name Capture step) ────────────────────────
+async completeProfile(userId: string, data: CompleteProfileDTO) {
+  const usernameCheck = await userRepository.getUserByUsername(data.username);
+  if (usernameCheck) {
+    throw new HttpError(409, "Username already in use");
+  }
+
+  const updatedUser = await userRepository.updateUser(userId, {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    username: data.username,
+    isOnboarded: true,   
+  });
+
+  if (!updatedUser) {
+    throw new HttpError(404, "User not found");
+  }
+
+  const token = this.generateToken(updatedUser);
+  return { token, user: this.formatUser(updatedUser) };
+}
 
   // ─── Get Current User ───────────────────────────────────────────
   async getCurrentUser(userId: string) {
