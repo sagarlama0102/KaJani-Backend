@@ -36,6 +36,7 @@ export class UserService {
       interests: user.interests,
       provider: user.provider,
       isOnboarded: user.isOnboarded,
+      isAdmin: user.isAdmin,
       isActive: user.isActive,
     };
   }
@@ -72,6 +73,9 @@ export class UserService {
     const user = await userRepository.getUserByEmail(data.email);
     if (!user) {
       throw new HttpError(404, "User not found");
+    }
+    if(user.isDeleted){
+      throw new HttpError(403, "This account has been deleted");
     }
 
     // Google OAuth users don't have a password
@@ -186,6 +190,17 @@ async completeProfile(userId: string, data: CompleteProfileDTO) {
       throw new HttpError(404, "User not found");
     }
 
+    // never let these be changed via profile update — they're system-managed
+  delete (data as any).isOnboarded;
+  delete (data as any).isActive;
+  delete (data as any).isAdmin;
+  delete (data as any).provider;
+    if(data.username && data.username !== user.username){
+      const taken = await userRepository.getUserByUsername(data.username);
+      if(taken) throw new HttpError (409, "Username already in use");
+    }
+  
+
     const updatedUser = await userRepository.updateUser(userId, data);
     if (!updatedUser) {
       throw new HttpError(500, "Failed to update user");
@@ -208,4 +223,30 @@ async completeProfile(userId: string, data: CompleteProfileDTO) {
 
     return { message: "User deleted successfully" };
   }
+
+  async deleteAccount(userId: string) {
+  const user = await userRepository.getUserById(userId);
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+  if (user.isDeleted) {
+    throw new HttpError(400, "Account already deleted");
+  }
+
+  // Scrub personal data + soft-delete. Keeps the row so their past
+  // participation still resolves (as "Deleted User") instead of breaking.
+  await userRepository.updateUser(userId, {
+    email: `deleted_${userId}@deleted.kajani`,
+    username: null as any,
+    firstName: "Deleted",
+    lastName: "User",
+    profilePicture: null as any,
+    password: null as any,
+    firebaseUid: null as any,
+    isDeleted: true,
+    isActive: false,
+  });
+
+  return { message: "Account deleted successfully" };
+}
 }

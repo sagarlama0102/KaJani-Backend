@@ -172,4 +172,21 @@ async completeProfile(req: Request, res: Response) {
       });
     }
   }
-}
+
+  // ─── Delete Account ─────────────────────────────────────────────
+  async deleteAccount(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user._id.toString();
+      const result = await userService.deleteAccount(userId);
+      return res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } catch (error: any) {
+      return res.status(error.statusCode ?? 500).json({
+        success: false,
+        message: error.message || "Internal Server Error",
+      });
+    }
+  }
+}   

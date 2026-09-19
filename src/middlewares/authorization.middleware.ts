@@ -32,6 +32,9 @@ export const authorizationMiddleware = async(req: Request, res: Response, next: 
         if(!user){
             throw new HttpError(401, "Unauthorized, User not found");
         }
+        if(user.isDeleted || !user.isActive){
+            throw new HttpError(401, "This account is no longer active");
+        }
         //attach user to request object
         req.user = user;
         next();

@@ -13,6 +13,7 @@ export const UserSchema = z.object({
   firebaseUid: z.string().optional(), // only for Google OAuth users
   isOnboarded: z.boolean().default(false), // becomes true after interest selection
   isActive: z.boolean().default(true),
+  isDeleted: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
     
 });

@@ -12,6 +12,7 @@ router.post("/register", authLimiter, authController.register);
 router.post("/login",authLimiter, authController.login);
 router.post("/google",authLimiter, authController.googleSignIn); //
 
+
 // ─── Protected Routes ─────────────────────────────────────────────
 router.get("/whoami", authorizationMiddleware, authController.getProfile);
 router.post(
@@ -25,5 +26,6 @@ router.post(
   uploads.single("profilePicture"),
   authController.updateProfile
 );
+router.delete("/account", authorizationMiddleware, authController.deleteAccount);
 
 export default router;

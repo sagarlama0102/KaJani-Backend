@@ -23,17 +23,6 @@ export class PlanService {
     const planStart = new Date(`${plan.date}T${plan.time}`);
     const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
 
-  //   console.log(`
-  //   Plan: ${plan.title}
-  //   Now: ${now.toISOString()}
-  //   Start: ${planStart.toISOString()}
-  //   End: ${planEnd.toISOString()}
-  //   isNaN start: ${isNaN(planStart.getTime())}
-  //   isNaN end: ${isNaN(planEnd.getTime())}
-  //   now < start: ${now < planStart}
-  //   now >= start AND now < end: ${now >= planStart && now < planEnd}
-  // `);
-
 if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
   if (now < planStart) return "upcoming";
   if (now >= planStart && now < planEnd) return "ongoing";

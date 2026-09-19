@@ -18,7 +18,9 @@ const UserSchame: Schema = new Schema<UserType>(
         firebaseUid: { type: String, sparse: true }, // sparse = allows multiple nulls
         isOnboarded: { type: Boolean, default: false },
         isActive: { type: Boolean, default: true },
+        isDeleted: { type: Boolean, default: false },
         isAdmin: { type: Boolean, default: false},
+        
     },
     {
         timestamps:true,
