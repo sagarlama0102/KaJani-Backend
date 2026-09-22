@@ -28,4 +28,6 @@ router.post(
 );
 router.delete("/account", authorizationMiddleware, authController.deleteAccount);
 
+router.post("/change-password", authorizationMiddleware, authController.changePassword);
+
 export default router;

@@ -43,3 +43,9 @@ export const CompleteProfileDTO = UserSchema.pick({
 export type CompleteProfileDTO = z.infer<typeof CompleteProfileDTO>;
 
 export type GoogleAuthType = z.infer<typeof GoogleAuthSchema>;
+
+export const ChangePasswordDTO = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+});
+export type ChangePasswordDTO = z.infer<typeof ChangePasswordDTO>;

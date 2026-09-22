@@ -249,4 +249,28 @@ async completeProfile(userId: string, data: CompleteProfileDTO) {
 
   return { message: "Account deleted successfully" };
 }
+
+async changePassword(userId: string, currentPassword: string, newPassword: string) {
+  const user = await userRepository.getUserByIdWithPassword(userId); 
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+
+  if (!user.password) {
+    throw new HttpError(400, "This account uses Google sign-in and has no password to change.");
+  }
+
+  const valid = await bcryptjs.compare(currentPassword, user.password);
+  if (!valid) {
+    throw new HttpError(401, "Current password is incorrect");
+  }
+
+  const hashedPassword = await bcryptjs.hash(newPassword, 10);
+  await userRepository.updateUser(userId, { password: hashedPassword });
+
+  return { message: "Password changed successfully" };
 }
+
+
+}
+

@@ -1,5 +1,5 @@
 import { UserService } from "../services/user.service";
-import { CreateUserDTO, LoginUserDTO, GoogleAuthSchema, UpdateUserDTO, CompleteProfileDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, GoogleAuthSchema, UpdateUserDTO, CompleteProfileDTO, ChangePasswordDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
 
@@ -189,4 +189,32 @@ async completeProfile(req: Request, res: Response) {
       });
     }
   }
+
+  // ─── Change Password ────────────────────────────────────────────
+async changePassword(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user._id.toString();
+    const parsedData = ChangePasswordDTO.safeParse(req.body);
+    if (!parsedData.success) {
+      return res.status(400).json({
+        success: false,
+        message: z.prettifyError(parsedData.error),
+      });
+    }
+    const result = await userService.changePassword(
+      userId,
+      parsedData.data.currentPassword,
+      parsedData.data.newPassword,
+    );
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode ?? 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+}
 }   

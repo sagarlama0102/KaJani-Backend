@@ -6,6 +6,7 @@ import * as serviceAccount from "../firebase-service-account.json";
 import { HttpError } from "./errors/http-error";
 import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
+import reportRoutes from "./routes/report.route";
 import notificationRoutes from "./routes/notification.route";
 import path from 'path';
 import { generalLimiter } from "./middlewares/rate-limit.middleware";
@@ -28,6 +29,7 @@ app.use(generalLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req: Request, res: Response) => {

@@ -55,6 +55,12 @@ export class UserRepository implements IUserRepository {
     return UserModel.findById(id).select("-password"); // never return password
   }
 
+  // Returns the user WITH the password hash — only for auth flows
+// (login, change password) that must verify credentials.
+async getUserByIdWithPassword(id: string): Promise<IUser | null> {
+  return UserModel.findById(id); // no .select("-password") — includes it
+}
+
   async getAllUsers(
     page: number,
     size: number,

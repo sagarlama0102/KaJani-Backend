@@ -31,4 +31,6 @@ router.post("/:id/join", authorizationMiddleware, planController.joinPlan);
 router.post("/:id/leave", authorizationMiddleware, planController.leavePlan);
 router.post("/:id/save", authorizationMiddleware, planController.toggleSavePlan);
 
+
+
 export default router;
