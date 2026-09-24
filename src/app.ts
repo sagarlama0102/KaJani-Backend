@@ -8,7 +8,6 @@ import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
 import reportRoutes from "./routes/report.route";
 import notificationRoutes from "./routes/notification.route";
-import path from 'path';
 import { generalLimiter } from "./middlewares/rate-limit.middleware";
 
 dotenv.config();
@@ -44,6 +43,6 @@ app.use((err: Error, req: Request, res: Response, next: Function) => {
   return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
 });
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 
 export default app;

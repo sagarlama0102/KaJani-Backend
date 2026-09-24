@@ -1,21 +1,16 @@
 import multer from "multer";
-import { v4 as uuidv4 } from "uuid";
-import path from "path";
-import fs from "fs";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.config";
 
-const uploadDir = path.join(__dirname, "../../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = uuidv4();
-    const extension = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "Kajani",
+      allowed_formats: ["jpg, 'jpeg", "png", "webp"],
+      public_id : `${file.fieldname}-${Date.now()}`,
+      transformation: [{width: 1200, crop: "limit"}],
+    };
   },
 });
 

@@ -157,7 +157,7 @@ async completeProfile(req: Request, res: Response) {
         });
       }
       if (req.file) {
-        parsedData.data.profilePicture = `/uploads/${req.file.filename}`;
+        parsedData.data.profilePicture = req.file.path;
       }
       const updatedUser = await userService.updateUser(userId, parsedData.data);
       return res.status(200).json({
