@@ -3,6 +3,9 @@ module.exports = {
     testEnvironment: 'node',
     testMatch: ['**/__tests__/**/*.test.ts'],
     setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+    transform: {
+    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],  // use the test config
+  },
     collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
