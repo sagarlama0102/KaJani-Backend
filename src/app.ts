@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import admin from "firebase-admin";
-import * as serviceAccount from "../firebase-service-account.json";
 import { HttpError } from "./errors/http-error";
 import authRoutes from "./routes/auth.route";
 import planRoutes from "./routes/plan.route";
@@ -12,9 +11,12 @@ import { generalLimiter } from "./middlewares/rate-limit.middleware";
 
 dotenv.config();
 
+const firebaseServiceAccount = JSON.parse(
+  Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 as string, "base64").toString("utf-8"),
+);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  credential: admin.credential.cert(firebaseServiceAccount as admin.ServiceAccount),
 });
 
 const app: Application = express();
