@@ -4,6 +4,7 @@ import { HttpError } from "../errors/http-error";
 import { IPlan } from "../models/plan.model";
 import { NotificationService } from "./notification.service";
 import { UserRepository } from "../repositories/user.repository";
+import { computeStatus } from "../utils/compute-status";
 
 
 
@@ -15,18 +16,8 @@ const notificationService = new NotificationService();
 export class PlanService {
 
     // ─── Helper: compute current status ─────────────────────────────
-  private computeStatus(plan: IPlan): "upcoming" | "ongoing" | "completed" | "cancelled" {
-    if (plan.status === "cancelled") return "cancelled";
-    if (!plan.endDate || !plan.endTime) return "upcoming";
-
-    const now = new Date();
-    const planStart = new Date(`${plan.date}T${plan.time}`);
-    const planEnd = new Date(`${plan.endDate}T${plan.endTime}`);
-
-if (isNaN(planStart.getTime()) || isNaN(planEnd.getTime())) return "upcoming";
-  if (now < planStart) return "upcoming";
-  if (now >= planStart && now < planEnd) return "ongoing";
-  return "completed";
+  private computeStatus(plan: IPlan){
+    return computeStatus(plan);
   }
 
   // ─── Helper: ensure a user is an admin ──────────────────────────
@@ -125,14 +116,14 @@ private async ensureCanCreatePlans(userId: string): Promise<void> {
 
   async getJoinedPlans(userId: string) {
     const plans = await planRepository.getJoinedPlans(userId);
-  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); // 👈 add this
+  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); 
   return plans;
   }
 
 
   async getSavedPlans(userId: string) {
     const plans = await planRepository.getSavedPlans(userId);
-  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); // 👈 add this
+  plans.forEach(plan => { plan.status = this.computeStatus(plan); }); // 
   return plans;
   }
 

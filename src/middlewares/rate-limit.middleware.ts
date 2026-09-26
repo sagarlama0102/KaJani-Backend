@@ -7,6 +7,7 @@ import { success } from "zod";
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15min
     max: 20,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: true,
     legacyHeaders: false,
     message: {
@@ -20,7 +21,8 @@ export const authLimiter = rateLimit({
 
 export const generalLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 100,
+  max: 300,
+  skip: () => process.env.NODE_ENV !== 'production',
   standardHeaders: true,
   legacyHeaders: false,
   message: {
