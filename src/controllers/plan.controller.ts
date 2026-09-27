@@ -2,6 +2,7 @@ import { PlanService } from "../services/plan.service";
 import { Request, Response } from "express";
 import { CreatePlanDTO, UpdatePlanDTO } from "../dtos/plan.dto";
 import z from "zod";
+import { HttpError } from "../errors/http-error";
 
 const planService = new PlanService();
 
@@ -25,9 +26,11 @@ export class PlanController {
         data: plan,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+                ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -53,9 +56,11 @@ export class PlanController {
         pagination,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -71,9 +76,11 @@ export class PlanController {
         data: plan,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -96,9 +103,11 @@ export class PlanController {
         data: updated,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -113,9 +122,11 @@ export class PlanController {
         message: result.message,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -131,9 +142,11 @@ export class PlanController {
         data: plans,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -149,9 +162,11 @@ export class PlanController {
         data: plans,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -167,9 +182,11 @@ export class PlanController {
         data: plans,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -185,9 +202,11 @@ export class PlanController {
         data: plan,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -203,9 +222,11 @@ export class PlanController {
         data: plan,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -221,9 +242,11 @@ export class PlanController {
         data: { saved: result.saved },
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -244,9 +267,11 @@ export class PlanController {
       data: { coverImage: imageUrl },
     });
   } catch (error: any) {
+    console.error(error);
     return res.status(error.statusCode ?? 500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
     });
   }
 }

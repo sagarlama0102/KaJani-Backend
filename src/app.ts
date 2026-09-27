@@ -39,10 +39,11 @@ app.get("/", (req: Request, res: Response) => {
 
 
 app.use((err: Error, req: Request, res: Response, next: Function) => {
+  console.error(err);
   if (err instanceof HttpError) {
     return res.status(err.statusCode).json({ success: false, message: err.message });
   }
-  return res.status(500).json({ success: false, message: err.message || "Internal Server Error" });
+  return res.status(500).json({ success: false, message: "Something went wrong. Please try again." });
 });
 
 

@@ -3,6 +3,7 @@ import { CreateReportDTO } from "../dtos/report.dto";
 import { Request, Response } from "express";
 import z from "zod";
 import { UserRepository } from "../repositories/user.repository";
+import { HttpError } from "../errors/http-error";
 
 const reportService = new ReportService();
 const userRepository = new UserRepository();
@@ -18,9 +19,11 @@ export class ReportController {
       const result = await reportService.createReport(reporterId, parsed.data);
       return res.status(201).json({ success: true, message: result.message });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+                ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -36,9 +39,11 @@ export class ReportController {
       const reports = await reportService.getReports();
       return res.status(200).json({ success: true, data: reports });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+                ? error.message : "Something went wrong. Please try again.",
       });
     }
   }

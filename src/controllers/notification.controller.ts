@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { NotificationService } from "../services/notification.service";
+import { HttpError } from "../errors/http-error";
 
 const notificationService = new NotificationService();
 
@@ -16,9 +17,11 @@ export class NotificationController {
         data: notifications,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -35,9 +38,11 @@ export class NotificationController {
         data: notification,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -52,9 +57,11 @@ export class NotificationController {
         message: "All notifications marked as read",
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -70,9 +77,11 @@ export class NotificationController {
         data: result,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -82,9 +91,11 @@ export class NotificationController {
     const result = await notificationService.clearAllNotifications(userId);
     return res.status(200).json({ success: true, message: result.message });
   } catch (error: any) {
+    console.error(error);
     return res.status(error.statusCode ?? 500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
     });
   }
 }

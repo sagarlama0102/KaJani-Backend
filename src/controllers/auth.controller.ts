@@ -2,6 +2,7 @@ import { UserService } from "../services/user.service";
 import { CreateUserDTO, LoginUserDTO, GoogleAuthSchema, UpdateUserDTO, CompleteProfileDTO, ChangePasswordDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
+import { HttpError } from "../errors/http-error";
 
 let userService = new UserService();
 
@@ -25,9 +26,11 @@ export class AuthController {
         data: newUser,
       });
     } catch (error: Error | any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ?error.message : "Something went wrong. Please try again",
       });
     }
   }
@@ -51,9 +54,11 @@ export class AuthController {
         token,
       });
     } catch (error: Error | any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again",
       });
     }
   }
@@ -83,9 +88,11 @@ async completeProfile(req: Request, res: Response) {
       token,
     });
   } catch (error: Error | any) {
+    console.error(error);
     return res.status(error.statusCode ?? 500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error instanceof HttpError
+      ? error.message : "Something went wrong. Please try again.",
     });
   }
 }
@@ -108,9 +115,11 @@ async completeProfile(req: Request, res: Response) {
         token,
       });
     } catch (error: Error | any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -132,9 +141,11 @@ async completeProfile(req: Request, res: Response) {
         data: user,
       });
     } catch (error: Error | any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -166,9 +177,11 @@ async completeProfile(req: Request, res: Response) {
         data: updatedUser,
       });
     } catch (error: Error | any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -183,9 +196,11 @@ async completeProfile(req: Request, res: Response) {
         message: result.message,
       });
     } catch (error: any) {
+      console.error(error);
       return res.status(error.statusCode ?? 500).json({
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
       });
     }
   }
@@ -211,9 +226,11 @@ async changePassword(req: Request, res: Response) {
       message: result.message,
     });
   } catch (error: any) {
+    console.error(error);
     return res.status(error.statusCode ?? 500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message: error instanceof HttpError
+        ? error.message : "Something went wrong. Please try again.",
     });
   }
 }
