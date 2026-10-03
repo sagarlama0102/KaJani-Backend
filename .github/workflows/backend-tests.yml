@@ -1,0 +1,31 @@
+name: Backend Tests
+
+# WHEN: run on every push and pull request to main
+on: 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # the environment (a fresh Ubuntu machine)
+
+    steps:
+      # 1. Get your code onto the runner
+      - name: Checkout code
+        uses: actions/Checkout@v4
+
+      # 2. Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
+      
+      # 4. Run the tests
+      - name: Run tests
+        run: npm test
